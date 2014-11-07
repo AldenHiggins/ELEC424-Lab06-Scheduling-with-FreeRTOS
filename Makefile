@@ -11,6 +11,9 @@ SYSTEM_LIBRARY_INCLUDE_DIR := $(STM_LIB)/STM32F10x_StdPeriph_Driver/inc/
 SYSTEM_LIBRARY_SRC_DIR := $(STM_LIB)/STM32F10x_StdPeriph_Driver/src/
 DEVICE_SUPPORT_DIR := $(STM_LIB)/CMSIS/CM3/DeviceSupport/ST/STM32F10x/
 CORE_INCLUDE_DIR := $(STM_LIB)/CMSIS/CM3/CoreSupport/
+FREE_RTOS_DIRECTORY := lib/FreeRTOS
+FREE_RTOS_INCLUDE := $(FREE_RTOS_DIRECTORY)/Source/include
+FREE_RTOS_COMPILER_PROC_INCLUDE := $(FREE_RTOS_DIRECTORY)/Source/portable/GCC/ARM_CM3_MPU
 
 # Compiler 
 CC = arm-none-eabi-gcc
@@ -22,14 +25,14 @@ PROCESSOR = -mcpu=cortex-m3 -mthumb
 SEARCH_DIRECTORIES := -I $(INCLUDE_DIR)
 SEARCH_DIRECTORIES += -I $(SYSTEM_LIBRARY_INCLUDE_DIR) -I $(SYSTEM_LIBRARY_SRC_DIR)
 SEARCH_DIRECTORIES += -I $(DEVICE_SUPPORT_DIR) -I $(CORE_INCLUDE_DIR)
-
+SEARCH_DIRECTORIES += -I $(FREE_RTOS_INCLUDE) -I $(FREE_RTOS_COMPILER_PROC_INCLUDE)
 # STM chip specific flags
 STFLAGS = -DSTM32F10X_MD $(SEARCH_DIRECTORIES) -include $(INCLUDE_DIR)/stm32f10x_conf.h
 
 # Define the compiler flags
 CFLAGS = -O0 -g3 $(PROCESSOR) $(Include) $(STFLAGS) -Wl,--gc-sections -T $(LINK_DIR)/stm32_flash.ld 
 
-# Source files to include
+#### Source files to include from our code and STM library ####
 FILES_TO_LINK := src/scheduling.c
 FILES_TO_LINK += src/sys_clk_init.c
 FILES_TO_LINK += $(SYSTEM_LIBRARY_SRC_DIR)/stm32f10x_rcc.c
@@ -40,6 +43,14 @@ FILES_TO_LINK += $(SYSTEM_LIBRARY_SRC_DIR)/stm32f10x_dbgmcu.c
 # FILES_TO_LINK += $(SYSTEM_LIBRARY_SRC_DIR)/system_stm32f10x.c
 FILES_TO_LINK += $(SYSTEM_LIBRARY_SRC_DIR)/misc.c
 FILES_TO_LINK += $(DEVICE_SUPPORT_DIR)/system_stm32f10x.c
+#### Include FREE_RTOS files ####
+FILES_TO_LINK += $(FREE_RTOS_DIRECTORY)/Source/tasks.c
+FILES_TO_LINK += $(FREE_RTOS_DIRECTORY)/Source/queue.c
+FILES_TO_LINK += $(FREE_RTOS_DIRECTORY)/Source/list.c
+FILES_TO_LINK += $(FREE_RTOS_DIRECTORY)/Source/portable/GCC/ARM_CM3_MPU/port.c
+FILES_TO_LINK += $(FREE_RTOS_DIRECTORY)/Source/portable/MemMang/heap_2.c
+
+
 # FILES_TO_LINK += lib/lab06_task.a
 
 # Build all relevant files and create .elf

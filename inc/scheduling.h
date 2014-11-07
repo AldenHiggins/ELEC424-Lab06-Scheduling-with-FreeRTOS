@@ -3,7 +3,7 @@
 
 // #include <stdio.h>
 #include <stdbool.h>
-// #include "lab06_task.h"
+#include "lab06_task.h"
 #include "stm32f10x_conf.h"
 
 // Timer and LED defines
